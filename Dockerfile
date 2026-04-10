@@ -1,12 +1,12 @@
-FROM ubuntu:24.04
+FROM ubuntu:20.04
 
 # Avoid interactive prompts during installation
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Jakarta
 
 # Install system dependencies
-RUN apt-get update --allow-insecure-repositories -o Acquire::AllowInsecureRepositories=true \
-    && apt-get install -y --allow-unauthenticated \
+RUN apt-get update \
+    && apt-get install -y \
     curl \
     wget \
     gnupg \
@@ -20,15 +20,15 @@ RUN apt-get update --allow-insecure-repositories -o Acquire::AllowInsecureReposi
 
 # Install Node.js 18.x (LTS)
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y --allow-unauthenticated nodejs
+    && apt-get install -y nodejs
 
-# Install MongoDB 8.0 (compatible with Ubuntu 24.04 Noble)
-RUN curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | \
-    gpg --dearmor -o /usr/share/keyrings/mongodb-server-8.0.gpg \
-    && echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | \
-    tee /etc/apt/sources.list.d/mongodb-org-8.0.list \
-    && apt-get update --allow-insecure-repositories -o Acquire::AllowInsecureRepositories=true \
-    && apt-get install -y --allow-unauthenticated mongodb-org
+# Install MongoDB 4.4 (compatible with Ubuntu 20.04, no AVX required for basic ops)
+# Note: MongoDB 4.4 on Ubuntu 20.04 does NOT require AVX unlike 5.0+
+RUN curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | apt-key add - \
+    && echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | \
+    tee /etc/apt/sources.list.d/mongodb-org-4.4.list \
+    && apt-get update \
+    && apt-get install -y mongodb-org
 
 # Install GenieACS
 RUN npm install -g genieacs@1.2.13

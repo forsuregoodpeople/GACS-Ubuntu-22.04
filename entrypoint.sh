@@ -41,8 +41,8 @@ export MONGO_DATA_DIR=${MONGO_DATA_DIR:-/data/db}
 log "Starting MongoDB..."
 mongod --fork --logpath /var/log/mongodb/mongod.log --dbpath $MONGO_DATA_DIR --bind_ip_all
 
-# Wait for MongoDB to be ready
-wait_for_service "MongoDB" "mongosh --eval 'db.runCommand({ping: 1})'"
+# Wait for MongoDB to be ready (MongoDB 4.4 uses mongo, not mongosh)
+wait_for_service "MongoDB" "mongo --eval 'db.runCommand({ping: 1})'"
 
 # Set environment variables
 export $(grep -v '^#' /opt/genieacs/genieacs.env | xargs)

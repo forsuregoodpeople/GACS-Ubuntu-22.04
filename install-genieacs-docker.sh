@@ -439,11 +439,13 @@ show_final_info() {
     echo -e "  Data Directory: $DATA_DIR"
     echo -e "  Configuration: $INSTALL_DIR/.env"
 
-    echo -e "\n${CYAN}Access URLs:${NC}"
+    echo -e "\n${CYAN}Access URLs (listening on ALL interfaces - 0.0.0.0):${NC}"
     echo -e "  Web UI:           http://$SERVER_IP:3000"
     echo -e "  CWMP (TR-069):    http://$SERVER_IP:7547"
     echo -e "  NBI API:          http://$SERVER_IP:7557"
     echo -e "  File Server:      http://$SERVER_IP:7567"
+    echo -e "\n${YELLOW}  Note: Services accessible from ANY IP on this host${NC}"
+    echo -e "${YELLOW}  (Tailscale, VPN, port forwarding, semua IP akan bekerja)${NC}"
 
     echo -e "\n${CYAN}Management Commands:${NC}"
     echo -e "  genieacs start   - Start services"
@@ -453,9 +455,10 @@ show_final_info() {
     echo -e "  genieacs logs    - Show logs"
 
     echo -e "\n${YELLOW}Important Notes:${NC}"
-    echo -e "  1. Configure ONUs to use ACS URL: http://$SERVER_IP:7547"
+    echo -e "  1. Configure ONUs to use ACS URL: http://<TAILSCALE-IP>:7547 atau http://$SERVER_IP:7547"
     echo -e "  2. Open ports 7547, 7557, 7567, 3000 in your firewall if needed"
     echo -e "  3. Check logs with: genieacs logs"
+    echo -e "  4. Services bind ke 0.0.0.0 — bisa diakses dari semua interface (Tailscale, VPN, dll)"
 }
 
 # Initialize log file with proper permissions
