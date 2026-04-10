@@ -148,9 +148,20 @@ install_docker() {
     run_command "systemctl enable docker" "Enabling Docker service"
 
     # Install docker-compose if not available
+    # docker-compose-plugin provides 'docker compose' (with space); create a shim if the hyphenated form is missing
     if ! command -v docker-compose > /dev/null 2>&1; then
-        run_command "curl -L \"https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-\$(uname -s)-\$(uname -m)\" -o /usr/local/bin/docker-compose" "Installing Docker Compose"
-        run_command "chmod +x /usr/local/bin/docker-compose" "Setting Docker Compose permissions"
+        if docker compose version > /dev/null 2>&1; then
+            # Plugin is available — create a wrapper shim
+            cat > /usr/local/bin/docker-compose << 'SHIM'
+#!/bin/sh
+exec docker compose "$@"
+SHIM
+            chmod +x /usr/local/bin/docker-compose
+            echo -e "${GREEN}docker-compose shim created (uses docker compose plugin)${NC}"
+        else
+            run_command "curl -L \"https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-\$(uname -s)-\$(uname -m)\" -o /usr/local/bin/docker-compose" "Installing Docker Compose"
+            run_command "chmod +x /usr/local/bin/docker-compose" "Setting Docker Compose permissions"
+        fi
     fi
 }
 
