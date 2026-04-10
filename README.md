@@ -19,6 +19,12 @@
   </a>
 </p>
 
+<p align="center">
+  <img alt="Ubuntu 24.04" src="https://img.shields.io/badge/Ubuntu-24.04%20Noble-E95420?logo=ubuntu&logoColor=white">
+  <img alt="MongoDB 8.0" src="https://img.shields.io/badge/MongoDB-8.0-47A248?logo=mongodb&logoColor=white">
+  <img alt="GenieACS" src="https://img.shields.io/badge/GenieACS-1.2.13-blue">
+</p>
+
 ---
 
 ## Pilih Mode Instalasi
@@ -45,7 +51,7 @@
 
 ## Catatan
 Silakan pilih metode instalasi sesuai kebutuhan Anda
-- **Docker** - lebih cepat, mudah di-rollback, isolasi layanan.
+- **Docker** - lebih cepat, mudah di-rollback, isolasi layanan. Support Ubuntu 18.04–24.04. Menggunakan native bridge network (tanpa ZeroTier).
 - **Non-Docker** - kontrol penuh di host Ubuntu 22.04 (Jammy).
 - Dashboard for better visualisation https://github.com/safrinnetwork/GACS-dashboard
 
