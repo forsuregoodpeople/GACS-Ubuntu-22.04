@@ -4,7 +4,8 @@ FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Jakarta
 
-# Install system dependencies
+# Install system dependencies + MongoDB from Ubuntu repo (no AVX required)
+# Using 'mongodb' package from Ubuntu 20.04 repo (v4.4 compatible, QEMU-safe)
 RUN apt-get update \
     && apt-get install -y \
     curl \
@@ -16,19 +17,12 @@ RUN apt-get update \
     net-tools \
     supervisor \
     ca-certificates \
+    mongodb \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js 18.x (LTS)
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs
-
-# Install MongoDB 4.4 (compatible with Ubuntu 20.04, no AVX required for basic ops)
-# Note: MongoDB 4.4 on Ubuntu 20.04 does NOT require AVX unlike 5.0+
-RUN curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | apt-key add - \
-    && echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | \
-    tee /etc/apt/sources.list.d/mongodb-org-4.4.list \
-    && apt-get update \
-    && apt-get install -y mongodb-org
 
 # Install GenieACS
 RUN npm install -g genieacs@1.2.13
@@ -42,7 +36,7 @@ RUN useradd --system --no-create-home --user-group genieacs \
 
 # Create data directories
 RUN mkdir -p /data/db /data/logs /var/log/mongodb \
-    && chown -R mongodb:mongodb /data/db /var/log/mongodb \
+    && chmod -R 755 /data/db /var/log/mongodb \
     && chown -R genieacs:genieacs /data/logs
 
 # Copy configuration files

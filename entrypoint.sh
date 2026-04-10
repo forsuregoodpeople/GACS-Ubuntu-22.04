@@ -66,7 +66,7 @@ fi
 
 # Fix permissions on mounted volumes
 chown -R genieacs:genieacs /var/log/genieacs
-chown -R mongodb:mongodb /data/db /var/log/mongodb
+chown -R root:root /data/db /var/log/mongodb
 
 # Start supervisor to manage GenieACS services
 log "Starting GenieACS services..."
