@@ -6,15 +6,8 @@ services:
     container_name: genieacs-server
     restart: unless-stopped
 
-    # Network configuration
-    network_mode: host
-
-    # Privileged mode required for ZeroTier
-    privileged: true
-
     # Environment variables (can be overridden in .env file)
     environment:
-      - ZEROTIER_NETWORK_ID=${ZEROTIER_NETWORK_ID:-}
       - GENIEACS_CWMP_INTERFACE=${GENIEACS_CWMP_INTERFACE:-0.0.0.0}
       - GENIEACS_NBI_INTERFACE=${GENIEACS_NBI_INTERFACE:-0.0.0.0}
       - GENIEACS_FS_INTERFACE=${GENIEACS_FS_INTERFACE:-0.0.0.0}
@@ -27,18 +20,15 @@ services:
       - genieacs-data:/data/db
       - genieacs-logs:/var/log/genieacs
       - genieacs-ext:/opt/genieacs/ext
-      - genieacs-config:/opt/genieacs/config
-      # ZeroTier identity persistence
-      - zerotier-data:/var/lib/zerotier-one
       # Optional: Mount custom extensions
       - ${GENIEACS_EXT_HOST_DIR:-./ext}:/opt/genieacs/ext
 
-    # Ports (when not using host network)
-    # ports:
-    #   - "7547:7547"  # CWMP (TR-069)
-    #   - "7557:7557"  # NBI (North Bound Interface)
-    #   - "7567:7567"  # File Server
-    #   - "3000:3000"  # Web UI
+    # Exposed ports
+    ports:
+      - "7547:7547"  # CWMP (TR-069)
+      - "7557:7557"  # NBI (North Bound Interface)
+      - "7567:7567"  # File Server
+      - "3000:3000"  # Web UI
 
     # Health check
     healthcheck:
@@ -80,16 +70,3 @@ volumes:
       o: bind
       device: ${DATA_DIR:-./data}/ext
 
-  genieacs-config:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./config
-
-  zerotier-data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${DATA_DIR:-./data}/zerotier

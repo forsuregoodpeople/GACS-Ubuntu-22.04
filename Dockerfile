@@ -1,40 +1,34 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 # Avoid interactive prompts during installation
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Jakarta
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update --allow-insecure-repositories -o Acquire::AllowInsecureRepositories=true \
+    && apt-get install -y --allow-unauthenticated \
     curl \
     wget \
     gnupg \
     software-properties-common \
-    systemd \
     iproute2 \
     iptables \
     net-tools \
-    dbus \
     supervisor \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js 18.x (LTS)
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs
+    && apt-get install -y --allow-unauthenticated nodejs
 
-# Install libssl1.1 for MongoDB compatibility
-RUN wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb \
-    && dpkg -i libssl1.1_1.1.0g-2ubuntu4_amd64.deb \
-    && rm libssl1.1_1.1.0g-2ubuntu4_amd64.deb
-
-# Install MongoDB 4.4 (compatible with GenieACS)
-RUN wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | apt-key add - \
-    && echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-4.4.list \
-    && apt-get update \
-    && apt-get install -y mongodb-org
-
-# Note: ZeroTier akan menggunakan host networking, tidak perlu install di container
+# Install MongoDB 8.0 (compatible with Ubuntu 24.04 Noble)
+RUN curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | \
+    gpg --dearmor -o /usr/share/keyrings/mongodb-server-8.0.gpg \
+    && echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | \
+    tee /etc/apt/sources.list.d/mongodb-org-8.0.list \
+    && apt-get update --allow-insecure-repositories -o Acquire::AllowInsecureRepositories=true \
+    && apt-get install -y --allow-unauthenticated mongodb-org
 
 # Install GenieACS
 RUN npm install -g genieacs@1.2.13
@@ -47,8 +41,8 @@ RUN useradd --system --no-create-home --user-group genieacs \
     && chown -R genieacs:genieacs /var/log/genieacs
 
 # Create data directories
-RUN mkdir -p /data/db /data/logs \
-    && chown -R mongodb:mongodb /data/db \
+RUN mkdir -p /data/db /data/logs /var/log/mongodb \
+    && chown -R mongodb:mongodb /data/db /var/log/mongodb \
     && chown -R genieacs:genieacs /data/logs
 
 # Copy configuration files
