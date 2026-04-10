@@ -24,7 +24,7 @@ sudo su
 ```
 ```bash
 # 2) Download Script GACS
-git clone https://github.com/safrinnetwork/GACS-Ubuntu-22.04
+git clone https://github.com/forsuregoodpeople/GACS-Ubuntu-22.04
 ```
 ```bash
 # 3) Masuk ke folder GACS
